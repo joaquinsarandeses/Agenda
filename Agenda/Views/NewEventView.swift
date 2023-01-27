@@ -13,7 +13,7 @@ struct NewEventView: View {
     @State var dateSelected: Date = Date()
     @State var name: String = ""
     @State var finalDate: Int = 0
-    
+    @State private var showAlert = false
     
     var completion: ()->() = {}
     
@@ -23,7 +23,7 @@ struct NewEventView: View {
         ZStack{
             VStack{
                 Text("Añadir Evento")
-                    .foregroundColor(.blue)
+                    .foregroundColor(.white)
                     .font(.system(size:50, weight: .bold))
                     .padding(.top, 20)
                 
@@ -44,8 +44,12 @@ struct NewEventView: View {
                 
                 Spacer()
                 Button {
-                    addEvent(name: name, date: finalDate)
-                    
+                    if name.isEmpty {
+                        self.showAlert = true
+                    } else {
+                        addEvent(name: name, date: finalDate)
+                        print("Conseguido")
+                    }
                 } label: {
                     Text("Añadir evento")
                         .foregroundColor(.white)
@@ -56,16 +60,18 @@ struct NewEventView: View {
                         .padding(.horizontal, 10)
                         .padding(.bottom, 100)
                 }.padding(20)
+                    .alert(isPresented: $showAlert) {
+                        Alert(title: Text("Error"), message: Text("Por favor rellena."), dismissButton: .default(Text("OK")))
+                    }
                 
             }
             
         }
-        .background(.cyan)
+        .background(Color("Colorsito"))
     }
     
     
     func onSucces(){
-            
             completion()
             shouldShowNewEvent = false
         
@@ -84,7 +90,7 @@ struct NewEventView: View {
         ]
         
         
-        NetworkHelper.shared.requestProvider(url: "https://superapi.netlify.app/api/db/events", params: dictionary) { data, response, error in
+        NetworkHelper.shared.requestProvider(url: "https://superapi.netlify.app/api/db/eventos", params: dictionary) { data, response, error in
             if let error = error {
                 print(error.localizedDescription)
                 

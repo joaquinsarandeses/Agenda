@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+import Foundation
 
 
 struct EventResponseModel: Decodable {
@@ -45,6 +45,9 @@ struct HomeView: View {
     @State var dateSelected: Date = Date()
     @State var events: [EventPresentationModel] = []
     @State private var shouldShowNewEvent = false
+    let formatter = DateFormatter()
+   
+
     
     var body: some View {
         ZStack{
@@ -69,14 +72,15 @@ struct HomeView: View {
                             ForEach(events) { event in
                                 HStack{
                                     /*@START_MENU_TOKEN@*/Text(event.name)/*@END_MENU_TOKEN@*/
-                                        .fixedSize()
+                                        .lineLimit(2)
                                         .bold()
                                         .foregroundColor(Color.blue)
                                     Spacer()
-                                    Text("\(event.date)")
-                                        .fixedSize()
+                                    Text(unixDate(date:event.date))
+                                        .lineLimit(2)
                                         .bold()
                                         .foregroundColor(.blue)
+                                       
                                 }
                                 .frame(height:50)
                                 .padding(5)
@@ -89,7 +93,7 @@ struct HomeView: View {
                     
                 }
                 .padding()
-                .background(.cyan)
+                .background(Color("Colorsito"))
             }
         }
         .sheet(isPresented: $shouldShowNewEvent, content:{ NewEventView(shouldShowNewEvent: $shouldShowNewEvent) {
@@ -150,6 +154,14 @@ struct HomeView: View {
     func onError(error: String){
         
     }
+    func unixDate(date: Int) ->String{
+        let date = NSDate(timeIntervalSince1970: TimeInterval(date))
+        let dayTimePeriodFormatter = DateFormatter()
+        dayTimePeriodFormatter.dateFormat = "dd/MM/yyyy"
+        let dateString = dayTimePeriodFormatter.string(from: date as Date)
+        return dateString
+    }
+    
     
     
     
